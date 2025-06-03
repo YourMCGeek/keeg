@@ -1,11 +1,37 @@
 import NextAuth from "next-auth";
-import Discord from "next-auth/providers/discord";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { JWT } from "next-auth/jwt";
+import Discord, { DiscordProfile } from "next-auth/providers/discord";
 // import "./envConfig";
 import { getBBBUserByDiscordId } from "./api/builtbybit";
 import { Member } from "@builtbybit/api-wrapper/types/helpers/members/MembersHelper";
 
 const STAFF_DISCORD_IDS: string[] =
   process.env.STAFF_DISCORD_IDS?.split(",") || [];
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      discord: DiscordProfile;
+      builtbybit: {
+        member: Member;
+        privateToken?: string;
+      };
+    };
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    discord?: DiscordProfile;
+    builtbybit?: {
+      member: Member;
+      privateToken?: string;
+    };
+    bbbLastFetch?: number;
+    lastFetch?: number;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -29,7 +55,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, account, profile }) {
       // Store Discord ID on first sign-in
       if (account && profile && profile.id) {
-        token.discordId = profile.id;
+        // Only set the discord object if it hasn't been set yet
+        if (!token.discord) {
+          token.discord = profile as DiscordProfile;
+        }
       }
 
       // Check if we should refresh BBB data (every 24 hours)
@@ -37,11 +66,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const lastFetch = (token.bbbLastFetch as number) || 0;
       const shouldRefresh = account || now - lastFetch > 24 * 60 * 60 * 1000; // 24 hours
 
-      if (token.discordId && shouldRefresh) {
+      if (token.discord?.id && shouldRefresh) {
         try {
-          const bbbUser = await getBBBUserByDiscordId(
-            token.discordId as string
-          );
+          const bbbUser = await getBBBUserByDiscordId(token.discord.id);
           if (bbbUser) {
             token.builtbybit = {
               member: bbbUser,
@@ -56,7 +83,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           console.error("Error fetching BBB user:", error);
         }
       }
-      console.log(token);
       return token;
     },
     session({ session, token }) {
@@ -64,6 +90,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         ...session,
         user: {
           ...session.user,
+          discord: token.discord,
           builtbybit: token.builtbybit,
         },
       };
@@ -89,24 +116,3 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
 });
-
-declare module "next-auth" {
-  interface Session {
-    user: {
-      builtbybit: {
-        member: Member;
-        privateToken?: string;
-      };
-    };
-  }
-
-  interface JWT {
-    discordId?: string;
-    builtbybit?: {
-      member: Member;
-      privateToken?: string;
-    };
-    bbbLastFetch?: number;
-    lastFetch?: number;
-  }
-}

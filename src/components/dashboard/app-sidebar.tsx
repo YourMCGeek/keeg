@@ -11,6 +11,7 @@ import {
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import Link from "next/link";
+import { ThemeSubMenu } from "../theme-switcher";
 
 const data = {
   user: {
@@ -125,8 +126,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="flex w-full">
         <NavUser />
+        <ThemeSubMenu />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
