@@ -1,7 +1,21 @@
 {
-  "name": "builtbychef-rewrite",
+  "name": "keeg",
   "version": "0.1.0",
   "private": true,
+  "author": "YourMCGeek",
+  "license": "GPL-3.0-only",
+  "description": "A modern dashboard with utilities and tools for supercharging and simplifying interactions with the BuiltByBit API and marketplace",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YourMCGeek/keeg.git"
+  },
+  "homepage": "https://github.com/YourMCGeek/keeg#readme",
+  "bugs": {
+    "url": "https://github.com/YourMCGeek/keeg/issues"
+  },
+  "keywords": [
+    "builtbybit"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

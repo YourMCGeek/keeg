@@ -21,8 +21,9 @@ const merriweatherSerif = Merriweather({
 });
 
 export const metadata: Metadata = {
-  title: "BuiltByChef",
-  description: "BuiltByChef - A Utility Dashboard for BuiltByBit Staff Members",
+  title: "Keeg",
+  description:
+    "A modern dashboard with utilities and tools for supercharging and simplifying interactions with the BuiltByBit API and marketplace",
 };
 
 export default async function RootLayout({

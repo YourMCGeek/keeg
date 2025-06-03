@@ -5,7 +5,6 @@ import { ChefHat } from "lucide-react";
 import {
   Card,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -22,7 +21,7 @@ export default function LoginPage() {
                 <ChefHat className="size-8 from-blue-600 to-purple-600" />
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-center">
                   <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    BuiltByChef
+                    Keeg
                   </span>
                 </h1>
               </div>
@@ -38,11 +37,6 @@ export default function LoginPage() {
               Sign in with Discord
             </Button>
           </CardDescription>
-          <CardFooter className="flex flex-col items-center gap-2">
-            <p className="text-xs text-muted-foreground">
-              Restricted to BuiltByBit staff members only.
-            </p>
-          </CardFooter>
         </Card>
       </div>
     </div>

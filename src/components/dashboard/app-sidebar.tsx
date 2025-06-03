@@ -117,7 +117,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <div className="flex items-center justify-center py-4">
             <ChefHat className="size-8" />
             <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent group-data-[state=collapsed]:hidden">
-              BuiltByChef
+              Keeg
             </span>
           </div>
         </Link>
