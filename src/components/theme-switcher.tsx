@@ -1,3 +1,4 @@
+"use client";
 import { useTheme } from "next-themes";
 import { Sun, Moon, Laptop } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
@@ -42,21 +43,22 @@ export function ThemeSubMenu() {
 
   return (
     <ToggleGroup
+      suppressHydrationWarning
       type="single"
       value={theme}
       onValueChange={setTheme}
       size="sm"
       className="w-full"
     >
-      <ToggleGroupItem value="light" title="Light">
+      <ToggleGroupItem value="light" title="Light" suppressHydrationWarning>
         <Sun className="h-4 w-4" />
         <span className="sr-only">Light</span>
       </ToggleGroupItem>
-      <ToggleGroupItem value="dark" title="Dark">
+      <ToggleGroupItem value="dark" title="Dark" suppressHydrationWarning>
         <Moon className="h-4 w-4" />
         <span className="sr-only">Dark</span>
       </ToggleGroupItem>
-      <ToggleGroupItem value="system" title="System">
+      <ToggleGroupItem value="system" title="System" suppressHydrationWarning>
         <Laptop className="h-4 w-4" />
         <span className="sr-only">System</span>
       </ToggleGroupItem>

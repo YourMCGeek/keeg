@@ -52,7 +52,7 @@ export default function Settings() {
 
   useEffect(() => {
     setUnsavedChanges(
-      JSON.stringify(formState) !== JSON.stringify(initialState)
+      JSON.stringify(formState) !== JSON.stringify(initialState),
     );
   }, [formState, initialState]);
 
@@ -99,7 +99,7 @@ export default function Settings() {
     section: keyof FormState,
     subSection: keyof ResourceCheckingData | null,
     key: SectionInputKey,
-    value: string
+    value: string,
   ) => {
     if (section === "resourceChecking" && subSection) {
       setFormState((prev) => ({

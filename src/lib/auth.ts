@@ -15,6 +15,7 @@ declare module "next-auth" {
       discord: DiscordProfile;
       builtbybit: {
         member: Member;
+        staff: boolean;
         privateToken?: string;
       };
     };
@@ -26,6 +27,7 @@ declare module "next-auth/jwt" {
     discord?: DiscordProfile;
     builtbybit?: {
       member: Member;
+      staff: boolean;
       privateToken?: string;
     };
     bbbLastFetch?: number;
@@ -44,14 +46,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    authorized({ auth }) {
-      return !!(
-        auth?.user &&
-        STAFF_DISCORD_IDS.includes(
-          auth.user.builtbybit?.member.discord_id?.toString() || ""
-        )
-      );
-    },
+    // authorized({ auth }) {
+    //   return !!(
+    //     auth?.user &&
+    //     STAFF_DISCORD_IDS.includes(
+    //       auth.user.builtbybit?.member.discord_id?.toString() || ""
+    //     )
+    //   );
+    // },
     async jwt({ token, account, profile }) {
       // Store Discord ID on first sign-in
       if (account && profile && profile.id) {
@@ -72,6 +74,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (bbbUser) {
             token.builtbybit = {
               member: bbbUser,
+              staff: STAFF_DISCORD_IDS.includes(token.discord.id),
               privateToken:
                 (token.builtbybit as { privateToken?: string })?.privateToken ??
                 "",
@@ -100,10 +103,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return false;
       }
 
-      // Check if user is staff
-      if (!STAFF_DISCORD_IDS.includes(profile.id)) {
-        return false;
-      }
+      // // Check if user is staff
+      // if (!STAFF_DISCORD_IDS.includes(profile.id)) {
+      //   return false;
+      // }
 
       // Check if user exists in BBB
       try {

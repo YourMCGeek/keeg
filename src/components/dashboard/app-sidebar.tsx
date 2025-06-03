@@ -35,7 +35,7 @@ const data = {
         },
         {
           title: "Settings",
-          url: "/dashboard/settings#builtbybit",
+          url: "/settings#builtbybit",
         },
       ],
     },
@@ -55,7 +55,7 @@ const data = {
         },
         {
           title: "Settings",
-          url: "/dashboard/settings#video-downloader",
+          url: "/settings#video-downloader",
         },
       ],
     },
@@ -83,27 +83,27 @@ const data = {
         },
         {
           title: "Settings",
-          url: "/dashboard/settings#resource-checking",
+          url: "/settings#resource-checking",
         },
       ],
     },
     {
       title: "Settings",
-      url: "/dashboard/settings",
+      url: "/settings",
       icon: Cog,
       isActive: false,
       items: [
         {
           title: "BuiltByBit",
-          url: "/dashboard/settings#builtbybit",
+          url: "/settings#builtbybit",
         },
         {
           title: "Video Downloader",
-          url: "/dashboard/settings#video-downloader",
+          url: "/settings#video-downloader",
         },
         {
           title: "Resource Checking",
-          url: "/dashboard/settings#resource-checking",
+          url: "/settings#resource-checking",
         },
       ],
     },
@@ -114,7 +114,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" className="group" {...props}>
       <SidebarHeader>
-        <Link href="/dashboard">
+        <Link href="/">
           <div className="flex items-center justify-center py-4">
             <ChefHat className="size-8" />
             <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent group-data-[state=collapsed]:hidden">

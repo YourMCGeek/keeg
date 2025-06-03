@@ -35,6 +35,7 @@ export function NavUser() {
                       src={session?.user?.builtbybit?.member?.avatar_url}
                       alt={session?.user?.builtbybit?.member?.username}
                     />
+
                     <AvatarFallback className="rounded-lg">
                       {session?.user?.builtbybit?.member?.username
                         ?.slice(0, 2)
@@ -45,7 +46,7 @@ export function NavUser() {
                     <span className="truncate font-medium">
                       {session?.user?.builtbybit?.member?.username}
                     </span>
-                    <span className="text-muted-foreground truncate text-xs">
+                    <span className="truncate text-xs">
                       {session?.user?.builtbybit?.member?.member_id}
                     </span>
                   </div>
@@ -65,6 +66,7 @@ export function NavUser() {
                         src={session?.user?.discord?.image_url || ""}
                         alt={session?.user?.discord?.username}
                       />
+
                       <AvatarFallback className="rounded-lg">
                         {session?.user?.discord?.username
                           ?.slice(0, 2)
@@ -95,9 +97,7 @@ export function NavUser() {
                       </Link>
                       <Button
                         variant="destructive"
-                        onClick={() =>
-                          signOut({ redirect: true, redirectTo: "/" })
-                        }
+                        onClick={() => signOut({ redirect: false })}
                         className="flex items-center gap-2 w-1/2 text-center"
                       >
                         <LogOut />
@@ -113,6 +113,7 @@ export function NavUser() {
           <Button
             variant="default"
             onClick={() => signIn("discord", { redirectTo: "/dashboard" })}
+            className="flex w-full"
           >
             <span>Login</span>
           </Button>

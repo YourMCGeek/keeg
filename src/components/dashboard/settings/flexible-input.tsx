@@ -49,6 +49,7 @@ export function FlexibleInput({
             {options.map((option) => (
               <div key={option.value} className="flex items-center space-x-3">
                 <RadioGroupItem value={option.value} id={option.value} />
+
                 <Label
                   htmlFor={option.value}
                   className="text-sm font-normal cursor-pointer leading-relaxed"
@@ -92,11 +93,12 @@ export function FlexibleInput({
                       onChange(
                         currentValues
                           .filter((v) => v !== option.value)
-                          .join(",")
+                          .join(","),
                       );
                     }
                   }}
                 />
+
                 <Label
                   htmlFor={option.value}
                   className="text-sm font-normal cursor-pointer leading-relaxed"

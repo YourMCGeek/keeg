@@ -26,10 +26,7 @@ export function NavMain({
     url: string;
     isActive?: boolean;
     icon?: LucideIcon;
-    items?: {
-      title: string;
-      url: string;
-    }[];
+    items?: { title: string; url: string }[];
   }[];
 }) {
   return (
