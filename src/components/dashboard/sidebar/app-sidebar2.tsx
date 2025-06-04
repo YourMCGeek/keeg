@@ -1,7 +1,10 @@
+"use client";
+import React, { useState, useEffect } from "react";
 import { Home, Download, Search, Cog, Plus, Minus } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
@@ -17,6 +20,9 @@ import {
   CollapsibleTrigger,
 } from "../../ui/collapsible";
 import { SearchForm } from "./search-form";
+import { ThemeSubMenu } from "@/components/theme-switcher";
+import { NavUser } from "./nav-user";
+import Link from "next/link";
 
 const data = {
   navMain: [
@@ -24,7 +30,7 @@ const data = {
       title: "BuiltByBit",
       url: "#",
       icon: Home,
-      isActive: true,
+      isActive: false,
       items: [
         { title: "User Lookup", url: "#", isActive: true },
         { title: "Resource Lookup", url: "#" },
@@ -70,6 +76,27 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  useEffect(() => {
+    const savedExpanded = localStorage.getItem("expandedSidebarItems");
+    if (savedExpanded) {
+      setExpandedItems(JSON.parse(savedExpanded));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("expandedSidebarItems", JSON.stringify(expandedItems));
+  }, [expandedItems]);
+
+  const toggleItem = (itemTitle: string) => {
+    setExpandedItems((prev) =>
+      prev.includes(itemTitle)
+        ? prev.filter((title) => title !== itemTitle)
+        : [...prev, itemTitle]
+    );
+  };
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -78,10 +105,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            {data.navMain.map((item, index) => (
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <Link href="/">Home</Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            {data.navMain.map((item) => (
               <Collapsible
                 key={item.title}
-                defaultOpen={index === 0}
+                open={expandedItems.includes(item.title)}
+                onOpenChange={() => toggleItem(item.title)}
                 className="group/collapsible"
               >
                 <SidebarMenuItem>
@@ -95,13 +128,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   {item.items?.length ? (
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items.map((item) => (
-                          <SidebarMenuSubItem key={item.title}>
-                            <SidebarMenuSubButton
-                              asChild
-                              isActive={item.isActive}
-                            >
-                              <a href={item.url}>{item.title}</a>
+                        {item.items.map((subItem) => (
+                          <SidebarMenuSubItem key={subItem.title}>
+                            <SidebarMenuSubButton asChild>
+                              <a href={subItem.url}>{subItem.title}</a>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
                         ))}
@@ -114,6 +144,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser />
+        <ThemeSubMenu />
+      </SidebarFooter>
     </Sidebar>
   );
 }

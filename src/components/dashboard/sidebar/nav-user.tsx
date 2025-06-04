@@ -1,12 +1,12 @@
-import "../ui/sidebar";
+import "@/components/ui/sidebar";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "../ui/sidebar";
+} from "@/components/ui/sidebar";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { Cog, InfoIcon, LogOut } from "lucide-react";
 import {
@@ -14,8 +14,8 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from "../ui/dropdown-menu";
-import { DropdownMenuTrigger } from "../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import { DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 
 export function NavUser() {
