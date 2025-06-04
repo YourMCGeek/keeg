@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/dashboard/app-sidebar";
+import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar2";
 import Settings from "@/components/dashboard/settings/settings";
 import {
   Breadcrumb,
