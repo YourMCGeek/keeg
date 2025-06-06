@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Merriweather } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/providers/theme-provider";
-import { SessionProvider } from "next-auth/react";
+import { cookies } from "next/headers";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar2";
-import { cookies } from "next/headers";
+import Providers from "@/components/providers";
 
 const interSans = Inter({
   variable: "--font-sans",
@@ -46,28 +45,21 @@ export default async function RootLayout({
       <body
         className={`${interSans.variable} ${jetbrainsMono.variable} ${merriweatherSerif.variable} antialiased`}
       >
-        <SessionProvider>
+        <Providers>
           <SidebarProvider defaultOpen={defaultOpen}>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <AppSidebar />
-              <SidebarInset className="flex w-full">
-                <header className="flex h-16 shrink-0 items-center gap-2 transition=[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                  <div className="flex flex-1 items-center justify-between gap-2 px-4">
-                    <div className="flex items-center gap-2 px-4">
-                      <SidebarTrigger className="-ml-1" />
-                    </div>
+            <AppSidebar />
+            <SidebarInset className="flex w-full">
+              <header className="flex h-16 shrink-0 items-center gap-2 transition=[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                <div className="flex flex-1 items-center justify-between gap-2 px-4">
+                  <div className="flex items-center gap-2 px-4">
+                    <SidebarTrigger className="-ml-1" />
                   </div>
-                </header>
-                <main className="flex-1 w-full p-4">{children}</main>
-              </SidebarInset>
-            </ThemeProvider>
+                </div>
+              </header>
+              <main className="flex-1 w-full p-4">{children}</main>
+            </SidebarInset>
           </SidebarProvider>
-        </SessionProvider>
+        </Providers>
       </body>
     </html>
   );

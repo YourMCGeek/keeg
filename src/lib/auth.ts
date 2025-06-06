@@ -16,7 +16,7 @@ declare module "next-auth" {
       builtbybit: {
         member: Member;
         staff: boolean;
-        privateToken?: string;
+        privateKey?: string;
       };
     };
   }
@@ -28,7 +28,7 @@ declare module "next-auth/jwt" {
     builtbybit?: {
       member: Member;
       staff: boolean;
-      privateToken?: string;
+      privateKey?: string;
     };
     bbbLastFetch?: number;
     lastFetch?: number;
@@ -75,9 +75,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             token.builtbybit = {
               member: bbbUser,
               staff: STAFF_DISCORD_IDS.includes(token.discord.id),
-              privateToken:
-                (token.builtbybit as { privateToken?: string })?.privateToken ??
-                "",
+              privateKey:
+                (token.builtbybit as { privateKey?: string })?.privateKey ?? "",
             };
             token.lastFetch = now;
             token.bbbLastFetch = now;
