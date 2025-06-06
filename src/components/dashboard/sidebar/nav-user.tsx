@@ -29,7 +29,7 @@ export function NavUser() {
           <div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg">
+                <SidebarMenuButton size="lg" className="bg-sidebar-primary">
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage
                       src={session?.user?.builtbybit?.member?.avatar_url}

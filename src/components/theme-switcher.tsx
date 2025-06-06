@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 export function ThemeSubMenu() {
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   // useEffect only runs on the client, so now we can safely show the UI
   useEffect(() => {
@@ -22,7 +22,7 @@ export function ThemeSubMenu() {
     <ToggleGroup
       suppressHydrationWarning
       type="single"
-      value={theme}
+      value={resolvedTheme}
       onValueChange={setTheme}
       size="sm"
       className="w-full"
