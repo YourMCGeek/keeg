@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
 import Providers from "@/components/providers";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 
 const interSans = Inter({
   variable: "--font-sans",
@@ -45,6 +47,8 @@ export default async function RootLayout({
       <body
         className={`${interSans.variable} ${jetbrainsMono.variable} ${merriweatherSerif.variable} antialiased`}
       >
+        <SpeedInsights />
+        <Analytics />
         <Providers>
           <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar />
