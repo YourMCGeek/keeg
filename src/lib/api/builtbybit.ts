@@ -1,31 +1,35 @@
+"use server";
+
 import { Wrapper, Token, TokenType, APIError } from "@builtbybit/api-wrapper";
 import { Member } from "@builtbybit/api-wrapper/types/helpers/members/MembersHelper";
-import { ErrorCode } from "../../../types/ErrorCode";
 
-const token = new Token(TokenType.PRIVATE, process.env.BBB_PRIVATE_TOKEN!);
 const wrapper = new Wrapper();
 
-async function initializeWrapper() {
+async function initializeWrapper(privateKey: string) {
   try {
-    if (
-      !process.env.BBB_PRIVATE_TOKEN ||
-      process.env.BBB_PRIVATE_TOKEN.trim() === ""
-    ) {
-      throw new Error(
-        "BuiltByBit API Key is not set in environment variables."
-      );
+    if (!privateKey || privateKey.trim() === "") {
+      throw new Error("BuiltByBit API Key not provided.");
     }
-    await wrapper.init(token);
+    await wrapper.init(new Token(TokenType.PRIVATE, privateKey));
   } catch (error) {
     console.error("Error initializing BuiltByBit API wrapper:", error);
     throw error; // Re-throw the error for further handling
   }
 }
 
+export async function signInCheck(discordId: string): Promise<Member | null> {
+  const member = await getBBBUserByDiscordId(
+    process.env.BBB_PRIVATE_TOKEN!,
+    discordId
+  );
+  return member;
+}
+
 export async function getBBBUserByDiscordId(
+  privateKey: string,
   discordId: string
 ): Promise<Member | null> {
-  await initializeWrapper();
+  await initializeWrapper(privateKey);
   let member: Member | null = null;
   if (!discordId) {
     throw new Error("Discord ID is required to fetch member.");
@@ -48,50 +52,20 @@ export async function getBBBUserByDiscordId(
   return member;
 }
 
-export async function send2FACode(
-  discordId: string,
-  code: string | number
-): Promise<{ success: boolean; conversationId?: number; error?: string }> {
-  await initializeWrapper();
-
-  // console.log("[2FA] Sending OTP:", code, "to user:", discordId);
-  if (!discordId) {
-    return {
-      success: false,
-      error: ErrorCode.DiscordIDRequired,
-    };
-  }
-
-  if (discordId === "102762443767287808") {
-    return {
-      success: true,
-      conversationId: 0,
-    };
-  }
-
-  const member = await getBBBUserByDiscordId(discordId);
-
-  if (member) {
-    const title = `2FA for BuiltByChief - ${code}`;
-    const message = `Your 2FA code for BuiltByChief is: ${code}. This code is valid for 5 minutes.`;
-
-    try {
-      const conversation = await wrapper
-        .conversations()
-        .start(title, message, [member.member_id]);
-      if (conversation) {
-        return { success: true, conversationId: conversation };
-      } else {
-        return { success: false, error: ErrorCode.TwoFAFailed };
-      }
-    } catch (error) {
-      console.error("Error creating and sending 2FA:", error);
-      return { success: false, error: ErrorCode.TwoFAFailed };
+export async function checkValidToken(
+  privateKey: string
+): Promise<{ valid: boolean; error?: string }> {
+  try {
+    await initializeWrapper(privateKey);
+    return { valid: true };
+  } catch (error) {
+    if (error instanceof APIError && error.code === "HeaderMalformdError") {
+      return { valid: false, error: error.message.split(" - ").pop() };
     }
-  } else {
-    return {
-      success: false,
-      error: ErrorCode.MemberNotFound,
-    };
+    if (error instanceof APIError && error.code === "TokenNotFoundError") {
+      return { valid: false, error: error.message.split(" - ").pop() };
+    }
+    console.error("Error checking health:", error);
+    return { valid: false, error: "An unknown error occurred" };
   }
 }

@@ -3,7 +3,7 @@ import NextAuth from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Discord, { DiscordProfile } from "next-auth/providers/discord";
 // import "./envConfig";
-import { getBBBUserByDiscordId } from "./api/builtbybit";
+import { signInCheck } from "./api/builtbybit";
 import { Member } from "@builtbybit/api-wrapper/types/helpers/members/MembersHelper";
 
 const STAFF_DISCORD_IDS: string[] =
@@ -16,7 +16,6 @@ declare module "next-auth" {
       builtbybit: {
         member: Member;
         staff: boolean;
-        privateKey?: string;
       };
     };
   }
@@ -28,7 +27,6 @@ declare module "next-auth/jwt" {
     builtbybit?: {
       member: Member;
       staff: boolean;
-      privateKey?: string;
     };
     bbbLastFetch?: number;
     lastFetch?: number;
@@ -46,73 +44,56 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    // authorized({ auth }) {
-    //   return !!(
-    //     auth?.user &&
-    //     STAFF_DISCORD_IDS.includes(
-    //       auth.user.builtbybit?.member.discord_id?.toString() || ""
-    //     )
-    //   );
-    // },
     async jwt({ token, account, profile }) {
-      // Store Discord ID on first sign-in
-      if (account && profile && profile.id) {
-        // Only set the discord object if it hasn't been set yet
-        if (!token.discord) {
-          token.discord = profile as DiscordProfile;
-        }
+      // On the first sign-in, create the token foundation
+      if (account && profile && !token.discord) {
+        token.discord = profile as DiscordProfile;
       }
 
-      // Check if we should refresh BBB data (every 24 hours)
+      // Refresh BBB data if it's stale (older than 24 hours) or on a new login
       const now = Date.now();
       const lastFetch = (token.bbbLastFetch as number) || 0;
-      const shouldRefresh = account || now - lastFetch > 24 * 60 * 60 * 1000; // 24 hours
+      const shouldRefresh = account || now - lastFetch > 24 * 60 * 60 * 1000;
 
       if (token.discord?.id && shouldRefresh) {
         try {
-          const bbbUser = await getBBBUserByDiscordId(token.discord.id);
+          const bbbUser = await signInCheck(token.discord.id);
           if (bbbUser) {
             token.builtbybit = {
               member: bbbUser,
               staff: STAFF_DISCORD_IDS.includes(token.discord.id),
-              privateKey:
-                (token.builtbybit as { privateKey?: string })?.privateKey ?? "",
             };
-            token.lastFetch = now;
             token.bbbLastFetch = now;
           }
         } catch (error) {
-          console.error("Error fetching BBB user:", error);
+          console.error("Error fetching BuiltByBit user data:", error);
+          // Decide how to handle this - maybe return the old token or clear bbb data
         }
       }
+
       return token;
     },
     session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          discord: token.discord,
-          builtbybit: token.builtbybit,
-        },
-      };
+      // Ensure the user object and its properties are correctly typed and assigned
+      if (session.user && token.discord && token.builtbybit) {
+        session.user.discord = token.discord;
+        session.user.builtbybit = {
+          member: token.builtbybit.member,
+          staff: token.builtbybit.staff,
+        };
+      }
+      return session;
     },
     async signIn({ profile }) {
       if (!profile?.id) {
         return false;
       }
 
-      // // Check if user is staff
-      // if (!STAFF_DISCORD_IDS.includes(profile.id)) {
-      //   return false;
-      // }
-
-      // Check if user exists in BBB
       try {
-        const bbbUser = await getBBBUserByDiscordId(profile.id);
+        const bbbUser = await signInCheck(profile.id);
         return !!bbbUser;
       } catch (error) {
-        console.error("Error checking BBB user:", error);
+        console.error("Error during sign-in check for BuiltByBit user:", error);
         return false;
       }
     },

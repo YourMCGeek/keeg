@@ -7,7 +7,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar2";
+import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
 import Providers from "@/components/providers";
 
 const interSans = Inter({

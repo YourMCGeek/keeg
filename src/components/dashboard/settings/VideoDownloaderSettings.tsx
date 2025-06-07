@@ -5,54 +5,106 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
+  CardFooter,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input"; // Assuming Input is from ui/input
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
+import {
+  getVideoQuality,
+  setVideoQuality,
+} from "@/lib/actions/settings-actions";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
-export default function VideoDownloaderSettings() {
-  const [quality, setQuality] = useState("");
-  const [isDirty, setIsDirty] = useState(false);
-  const initialQuality = ""; // Initial value for comparison
+const formSchema = z.object({
+  quality: z
+    .string()
+    .min(1, "Quality preference is required.")
+    .max(20, "Quality preference must be 20 characters or less."),
+});
+
+/**
+ * A component for managing video downloader settings.
+ * It allows users to set a preferred video quality, which is saved to a cookie.
+ */
+export function VideoDownloaderSettings() {
+  const [isLoading, setIsLoading] = useState(false);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      quality: "",
+    },
+  });
 
   useEffect(() => {
-    if (quality !== initialQuality) {
-      setIsDirty(true);
-      const timer = setTimeout(() => {
-        console.log("Autosaving Video Downloader settings:", quality); // Replace with actual save logic
-        setIsDirty(false); // Reset after save
-      }, 1000); // 1-second delay for autosave
-      return () => clearTimeout(timer); // Cleanup
+    async function loadInitialQuality() {
+      const quality = await getVideoQuality();
+      if (quality) {
+        form.setValue("quality", quality, {
+          shouldDirty: false,
+          shouldTouch: false,
+        });
+      }
     }
-  }, [quality, initialQuality]);
+    loadInitialQuality();
+  }, [form]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setQuality(e.target.value);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    try {
+      await setVideoQuality(values.quality);
+      toast.success("Video quality preference saved.");
+      form.reset({ quality: values.quality });
+    } catch (error) {
+      console.error("Error saving video quality:", error);
+      toast.error("Failed to save video quality preference.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Video Downloader</CardTitle>
-        <CardDescription>Options for video downloading</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <Input
-            type="text"
-            placeholder="Enter preferred quality (e.g., 1080p)"
-            value={quality}
-            onChange={handleInputChange}
-          />
-          {isDirty && (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Video Downloader</CardTitle>
+            <CardDescription>
+              Set your preferred quality for video downloads.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FormField
+              control={form.control}
+              name="quality"
+              render={({ field }) => (
+                <FormItem>
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="e.g., 1080p, 720p, best"
+                    disabled={isLoading}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+          <CardFooter>
             <Button
-              onClick={() =>
-                console.log("Manually saved Video Downloader settings")
-              }
+              type="submit"
+              className="w-full"
+              disabled={!form.formState.isDirty || isLoading}
             >
-              Save
+              {isLoading ? "Saving..." : "Save Preference"}
             </Button>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
   );
 }

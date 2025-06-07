@@ -6,6 +6,12 @@ import {
 } from "@/components/ui/sidebar";
 import { Search } from "lucide-react";
 
+/**
+ * A simple search form component designed for use within the application sidebar.
+ *
+ * @param {React.ComponentProps<'form'>} props - Standard form element props.
+ * @returns {JSX.Element} The rendered search form.
+ */
 export function SearchForm({ ...props }: React.ComponentProps<"form">) {
   return (
     <form {...props}>
