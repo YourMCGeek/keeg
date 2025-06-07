@@ -1,0 +1,154 @@
+---
+description: 
+globs: .tsx,.ts,.js,.jsx
+alwaysApply: false
+---
+# Development Guidelines
+
+This guide establishes the best practices and conventions for modern web development using React, Next.js, TypeScript, and associated technologies.
+
+---
+
+## 🏛️ Development Philosophy
+
+- **Code Quality**: Write clean, maintainable, scalable, and concise code.
+- **Programming Patterns**: Strongly prefer functional and declarative patterns. Avoid classes and imperative code.
+- **Modularity**: Emphasize component-driven development and iteration over code duplication. Extract reusable logic into custom hooks and helper functions.
+- **Type Safety**: Use TypeScript with `strict` mode enabled to enforce type safety and leverage static analysis.
+- **Planning**: Begin development with a clear plan, including pseudocode and documentation of component architecture and data flow. Prioritize handling edge cases and errors from the start.
+
+---
+
+## ✍️ Code Style & Formatting
+
+We will adhere to **Standard.js** rules for consistent, clean code. A linter should be configured to enforce these rules automatically.
+
+- **Indentation**: Use **2 spaces**.
+- **Quotes**: Use **single quotes** for strings, except to avoid escaping.
+- **Spacing**:
+    - Add a space after keywords (e.g., `if`, `for`).
+    - Add a space before function declaration parentheses (e.g., `function myFunction () { ... }`).
+    - Space all infix operators (e.g., `x + y`).
+    - Ensure a space follows commas.
+- **Equality**: Always use strict equality (`===`) instead of loose equality (`==`).
+- **Line Endings**: Keep `else` statements on the same line as the closing brace of an `if` block.
+- **Variables**: Do not commit code with unused variables.
+- **Line Length**: Limit lines to 80 characters for better readability.
+- **Trailing Commas**: Use trailing commas in multi-line object and array literals.
+
+---
+
+## 📛 Naming Conventions
+
+Consistent naming is crucial for readability and maintainability.
+
+| Type                      | Convention                   | Examples                               |
+| :------------------------ | :--------------------------- | :------------------------------------- |
+| **Components & Types** | `PascalCase`                 | `AuthWizard`, `interface UserProfile`  |
+| **Files & Directories** | `kebab-case`                 | `user-profile.tsx`, `auth-wizard/`     |
+| **Variables & Functions** | `camelCase`                  | `const user`, `function getUser()`     |
+| **Hooks** | `camelCase` (prefixed with `use`) | `useAuth`, `useForm`                   |
+| **Props & Properties** | `camelCase`                  | `const { userId } = props`             |
+| **Booleans** | `camelCase` (prefixed with a verb) | `isLoading`, `hasError`, `canSubmit`   |
+| **Event Handlers** | `camelCase` (prefixed with `handle`) | `handleClick`, `handleSubmit`          |
+| **Constants & Globals** | `UPPERCASE_SNAKE_CASE`       | `const API_URL = '...'`                |
+
+- **Exports**: Favor **named exports** over default exports for components and functions.
+- **Abbreviations**: Use complete words over abbreviations, with common exceptions: `err`, `req`, `res`, `props`, `ref`.
+
+---
+
+## ⚛️ React & Next.js Best Practices
+
+### Component Architecture
+- **Functional Components**: Define all components as functions using the `function` keyword.
+- **Composition**: Prefer component composition over inheritance. Use the `children` prop and render props for flexible, reusable components.
+- **Server Components**: Default to **React Server Components (RSC)** in Next.js. Only use the `'use client'` directive when absolutely necessary for interactivity, event listeners, or browser APIs.
+- **Code Splitting**: Implement code splitting using dynamic imports (`React.lazy` and `Suspense`) to load components only when needed.
+- **Hooks**:
+    - Follow the Rules of Hooks (call at the top level, from React functions).
+    - Use `useEffect` for side effects and always include a cleanup function to prevent memory leaks.
+    - Extract reusable stateful logic into custom hooks (`use...`).
+
+### Performance Optimization
+- **Memoization**:
+    - Use `useCallback` to memoize functions passed as props to child components.
+    - Use `useMemo` to memoize the results of expensive computations.
+    - Wrap components in `React.memo()` strategically to prevent re-renders when props have not changed.
+- **Rendering**: Avoid inline function definitions in JSX to prevent unnecessary re-renders.
+- **Keys**: Always use stable, unique identifiers as `key` props in lists. Avoid using the array `index`.
+- **Next.js Components**: Utilize Next.js built-in components like `<Image>`, `<Link>`, and `<Script>` for optimal performance.
+
+### TypeScript Implementation
+- **Strict Mode**: Always enable `strict` mode in `tsconfig.json`.
+- **Interfaces**: Define clear `interface` definitions for props, state, and other object structures. Prefer `interface` over `type` for extensibility.
+- **Utility Types**: Leverage TypeScript's utility types (`Partial`, `Pick`, `Omit`, `Record`) to create new types from existing ones efficiently.
+- **Generics**: Apply generics to create flexible and reusable functions, components, and types.
+
+---
+
+## 🗄️ State Management
+
+- **Local State**: Use `useState` for simple, component-level state and `useReducer` for more complex local state logic.
+- **Shared State**: For state shared between a few components, lift state up to the nearest common ancestor or use `useContext`.
+- **Global State**: Use **Zustand** for managing complex global state. Create separate stores (slices) for different features to keep state normalized and maintainable.
+- **URL State**: Use a library like **`nuqs`** to manage state within URL search parameters, which is ideal for server components and shareable links.
+
+---
+
+## 🎨 UI & Styling
+
+A hybrid approach using **Tailwind CSS** for utilities and **Stylus** for component-specific styles provides both speed and maintainability.
+
+### General Guidelines
+- **UI Primitives**: Use **Shadcn UI** and **Radix UI** as the foundation for building consistent, accessible components.
+- **Responsive Design**: Design with a **mobile-first** approach.
+- **Theming**: Implement dark mode and define theme properties (colors, spacing) using CSS variables for easy maintenance.
+- **Accessibility**: Ensure all color contrast ratios meet WCAG standards.
+
+### Styling Implementation
+1.  **Tailwind CSS**: Use for utility-first styling (layout, spacing, typography, etc.) and rapid prototyping.
+2.  **Stylus CSS Modules**: Use for complex, component-specific styles that are difficult to manage with utility classes alone.
+    - Create a `ComponentName.module.styl` file alongside its corresponding component.
+    - Use `camelCase` for class names within Stylus files.
+    - Leverage Stylus features like variables, mixins, and nesting.
+    - **NEVER** use the `@apply` directive in CSS. Compose classes in your JSX instead.
+
+---
+
+## 🛡️ Error Handling, Validation & Security
+
+### Error Handling
+- **Guard Clauses**: Use early returns (guard clauses) at the beginning of functions to handle errors and invalid arguments. This keeps the primary logic ("happy path") clear and un-nested.
+- **Error Boundaries**: Wrap component trees in React **Error Boundaries** to catch runtime errors, log them to a service (e.g., Sentry), and display a user-friendly fallback UI.
+- **Server Actions**: In Next.js Server Actions, model expected errors as part of the return value instead of throwing them.
+
+### Validation & Security
+- **Schema Validation**: Use **Zod** to define schemas for validating form data, API responses, and other data structures.
+- **Form Management**: Use a library like **React Hook Form** for managing complex forms.
+- **Input Sanitization**: Sanitize all user-generated input to prevent Cross-Site Scripting (XSS) attacks. When necessary to render HTML, use a library like **DOMPurify**.
+
+---
+
+## 🧪 Testing
+
+- **Unit Testing**: Use **Jest** and **React Testing Library** to write unit tests for individual components and functions. Follow the **Arrange-Act-Assert** pattern.
+- **Integration Testing**: Write integration tests that cover critical user workflows, ensuring components work together correctly.
+- **Mocking**: Mock all external dependencies, such as API calls and modules, to isolate tests.
+- **Snapshots**: Use snapshot testing sparingly, primarily to detect unintended UI changes.
+
+---
+
+## 🌐 Accessibility, i18n & Docs
+
+- **Accessibility (a11y)**:
+    - Use **semantic HTML** to provide inherent meaning and structure.
+    - Apply appropriate **ARIA attributes** where necessary.
+    - Ensure all functionality is accessible via keyboard navigation.
+    - Provide clear focus management and logical heading hierarchies.
+- **Internationalization (i18n)**: Use a library like **`next-i18next`** to manage translations, locale detection, and formatting for numbers, dates, and currencies.
+- **Documentation**:
+    - Use **JSDoc** to document all public functions, components, interfaces, and types.
+
+
+    - Write clear, concise descriptions with examples where appropriate.
