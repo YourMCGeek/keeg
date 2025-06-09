@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Merriweather } from "next/font/google";
 import "../globals.css";
+import Providers from "@/components/providers";
 
 const interSans = Inter({
   variable: "--font-sans",
@@ -34,7 +35,9 @@ export default async function SignInLayout({
       <body
         className={`${interSans.variable} ${jetbrainsMono.variable} ${merriweatherSerif.variable} antialiased`}
       >
-        <main className="flex-1 w-full p-4">{children}</main>
+        <Providers>
+          <main className="flex-1 w-full p-4">{children}</main>
+        </Providers>
       </body>
     </html>
   );
